@@ -1,3 +1,9 @@
 Flappy bird uses the space bar to make the small bird move upwards only.
 The bird only moves foward and the goal is to get as far as you can without hitting 
 any obsticals. Flappy bird is very simple and easy to understand and fun to play
+
+Question 1: The game we wanted to make was inspired by jetpack joyride. We'd make it our own by using different sprites and different backrounds.
+Q2: We want the players to move foward and up at the same time with only one button input.
+Q3: The game would be endless so it'd end when the player hits an obstical.
+Q4: The player starts from the begining
+Q5: jetpack joyride, flappy bird, other games that require a one button input like geometry dash.
