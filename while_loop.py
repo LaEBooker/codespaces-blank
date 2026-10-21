@@ -31,5 +31,27 @@ def guessing_Game():
     
     print('You guessed correct lil boy')
 
-guessing_Game()
+
+def password_Reset():
+    CorrectPassword = 'password23'
+    attemps = 4
+    print('Type in your password..')
+    userPassword = str(input('password..'))
+
+    while userPassword != CorrectPassword:
+        print('worng password..please try again.')
+        attemps -=1
+        print('wrong attemps:' +str(attemps))
+        userPassword = str(input('password..'))
+
+    if attemps == 0:
+        print('youve been locked out of your program..')
+
+    print('welcome to your program..')
+
+
+    
+    
+
+password_Reset()
 
