@@ -50,8 +50,4 @@ def password_Reset():
     print('welcome to your program..')
 
 
-    
-    
-
-password_Reset()
-
+password_Reset() 
