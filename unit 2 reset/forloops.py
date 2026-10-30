@@ -46,3 +46,36 @@ for i in GradeSem:
     if i < 85:
         print(i)
 
+
+# Lists - a container for multiple pieces of data
+
+# Lists are used to keep data structed and organized.
+
+
+drinks = []
+sandwitch = []
+soups = []
+wawa_kiosk = drinks, sandwitch, soups
+
+# when select an item we use the  indexing system of a list
+inventory = ["weapons", "healing kit"," armor", "grenade"]
+
+# lists are 0 based indexing systems, MEANING- the first
+# item in a list starts with 0.
+print(inventory[0]) 
+
+# Lists are changeable abd manipulatable (mutable)
+
+# when we want to add items we use the append() method
+
+inventory.append("kife")
+print(inventory)
+
+# how to remove an item from a list
+# remove the 'healing kit'
+# add a new healing kit
+
+inventory.remove("healing kit")
+inventory.insert("healing kit"[3])
+
+print(inventory)
