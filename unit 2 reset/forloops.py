@@ -79,3 +79,4 @@ inventory.remove("healing kit")
 inventory.insert("healing kit"[3])
 
 print(inventory)
+
