@@ -1,0 +1,9 @@
+1: The game i want to make is a Jetpack Joyride inspired game. I want to have it be an endless experince getting harder and harder
+to complete and i want there to be different challenge levels to pick from that change your experince. To promote the game i think having
+connected story through simple animations would be a good idea.
+
+2: The game is very simple. The only key you need to use is the space bar. You're constantly moving foward so the only thingm You
+need to do to avoid enemies is jump.
+
+3: one game object would be the enemy and it's hitbox. Running into the enemy would end your game and make you start over. Another game
+object would be the player itself. Having the play move and be able to interact with the enviornment like hitting walls and enemies alike.

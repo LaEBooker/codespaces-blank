@@ -1,0 +1,417 @@
+import pygame
+import random
+import sys
+
+pygame.init()
+
+# Screen
+WIDTH = 800
+HEIGHT = 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Space Invaders")
+
+clock = pygame.time.Clock()
+font = pygame.font.SysFont("Arial", 28)
+big_font = pygame.font.SysFont("Arial", 48)
+
+# Colors
+BLACK = (8, 10, 25)
+WHITE = (240, 240, 255)
+GREEN = (70, 255, 120)
+PURPLE = (180, 70, 255)
+BLUE = (60, 160, 255)
+RED = (255, 65, 75)
+YELLOW = (255, 220, 70)
+GRAY = (100, 110, 140)
+
+# Player
+player = pygame.Rect(370, 520, 50, 40)
+player_speed = 6
+
+# Bullets
+player_bullets = []
+enemy_bullets = []
+
+bullet_speed = 8
+enemy_bullet_speed = 4
+
+# Enemy attack cooldown
+enemy_cooldown = 700
+last_enemy_shot = 0
+
+# Enemies
+enemies = []
+enemy_speed = 2
+enemy_direction = 1
+
+# Platforms
+platforms = []
+
+# Game variables
+score = 0
+game_over = False
+won = False
+
+# Create enemies
+def create_enemies():
+    enemies.clear()
+
+    for row in range(4):
+        for col in range(8):
+            enemy = pygame.Rect(
+                90 + col * 80,
+                65 + row * 55,
+                42,
+                32
+            )
+            enemies.append(enemy)
+
+
+# Create destructible platforms
+def create_platforms():
+    platforms.clear()
+
+    for x in [120, 310, 500, 690]:
+        for row in range(3):
+            for col in range(6):
+
+                # Leave small gaps in platforms
+                if col == 2 and row == 0:
+                    continue
+
+                if col == 4 and row == 2:
+                    continue
+
+                block = pygame.Rect(
+                    x + col * 9,
+                    440 + row * 9,
+                    9,
+                    9
+                )
+
+                platforms.append(block)
+
+
+# Draw player sprite
+def draw_player():
+    x = player.x
+    y = player.y
+
+    # Main spaceship
+    pygame.draw.polygon(
+        screen, BLUE,
+        [
+            (x + 25, y),
+            (x + 42, y + 30),
+            (x + 50, y + 40),
+            (x, y + 40),
+            (x + 8, y + 30)
+        ]
+    )
+
+    # Cockpit
+    pygame.draw.rect(
+        screen, WHITE,
+        (x + 19, y + 12, 12, 12)
+    )
+
+    # Engines
+    pygame.draw.rect(
+        screen, YELLOW,
+        (x + 8, y + 38, 8, 5)
+    )
+
+    pygame.draw.rect(
+        screen, YELLOW,
+        (x + 34, y + 38, 8, 5)
+    )
+
+
+# Draw enemy sprite
+def draw_enemy(enemy):
+    x = enemy.x
+    y = enemy.y
+
+    # Alien body
+    pygame.draw.rect(
+        screen, GREEN,
+        (x + 8, y + 5, 26, 20)
+    )
+
+    pygame.draw.rect(
+        screen, GREEN,
+        (x, y + 12, 42, 12)
+    )
+
+    # Antennas
+    pygame.draw.line(
+        screen, GREEN,
+        (x + 10, y + 5),
+        (x + 5, y),
+        3
+    )
+
+    pygame.draw.line(
+        screen, GREEN,
+        (x + 32, y + 5),
+        (x + 37, y),
+        3
+    )
+
+    # Eyes
+    pygame.draw.rect(
+        screen, BLACK,
+        (x + 11, y + 10, 6, 7)
+    )
+
+    pygame.draw.rect(
+        screen, BLACK,
+        (x + 25, y + 10, 6, 7)
+    )
+
+    # Feet
+    pygame.draw.rect(
+        screen, GREEN,
+        (x + 5, y + 24, 9, 8)
+    )
+
+    pygame.draw.rect(
+        screen, GREEN,
+        (x + 28, y + 24, 9, 8)
+    )
+
+
+# Reset game
+def reset_game():
+    global score, game_over, won
+    global enemy_speed, enemy_direction
+    global last_enemy_shot
+
+    score = 0
+    game_over = False
+    won = False
+
+    enemy_speed = 2
+    enemy_direction = 1
+    last_enemy_shot = pygame.time.get_ticks()
+
+    player.centerx = WIDTH // 2
+
+    player_bullets.clear()
+    enemy_bullets.clear()
+
+    create_enemies()
+    create_platforms()
+
+
+create_enemies()
+create_platforms()
+
+# Main game loop
+while True:
+
+    current_time = pygame.time.get_ticks()
+
+    for event in pygame.event.get():
+
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+
+            # Player shooting
+            if event.key == pygame.K_SPACE and not game_over:
+                player_bullets.append(
+                    pygame.Rect(
+                        player.centerx - 3,
+                        player.top - 12,
+                        6,
+                        15
+                    )
+                )
+
+            # Restart
+            if event.key == pygame.K_r and game_over:
+                reset_game()
+
+    keys = pygame.key.get_pressed()
+
+    if not game_over:
+
+        # Player movement - arrow keys only
+        if keys[pygame.K_LEFT]:
+            player.x -= player_speed
+
+        if keys[pygame.K_RIGHT]:
+            player.x += player_speed
+
+        player.clamp_ip(
+            pygame.Rect(0, 0, WIDTH, HEIGHT)
+        )
+
+        # Move enemies
+        for enemy in enemies:
+            enemy.x += enemy_speed * enemy_direction
+
+        # Enemy direction change
+        if any(
+            enemy.right >= WIDTH or enemy.left <= 0
+            for enemy in enemies
+        ):
+
+            enemy_direction *= -1
+
+            for enemy in enemies:
+                enemy.y += 15
+
+        # Enemies attack with cooldown
+        if enemies and current_time - last_enemy_shot >= enemy_cooldown:
+
+            shooter = random.choice(enemies)
+
+            enemy_bullets.append(
+                pygame.Rect(
+                    shooter.centerx - 3,
+                    shooter.bottom,
+                    6,
+                    14
+                )
+            )
+
+            last_enemy_shot = current_time
+
+        # Move player bullets
+        for bullet in player_bullets[:]:
+            bullet.y -= bullet_speed
+
+            if bullet.bottom < 0:
+                player_bullets.remove(bullet)
+
+        # Move enemy bullets
+        for bullet in enemy_bullets[:]:
+            bullet.y += enemy_bullet_speed
+
+            if bullet.top > HEIGHT:
+                enemy_bullets.remove(bullet)
+
+        # Player bullets hit platforms
+        for bullet in player_bullets[:]:
+            for block in platforms[:]:
+                if bullet.colliderect(block):
+                    player_bullets.remove(bullet)
+                    break
+
+        # Enemy bullets destroy platforms
+        for bullet in enemy_bullets[:]:
+            for block in platforms[:]:
+                if bullet.colliderect(block):
+                    platforms.remove(block)
+
+                    if bullet in enemy_bullets:
+                        enemy_bullets.remove(bullet)
+
+                    break
+
+        # Player bullets hit enemies
+        for bullet in player_bullets[:]:
+            for enemy in enemies[:]:
+
+                if bullet.colliderect(enemy):
+
+                    if bullet in player_bullets:
+                        player_bullets.remove(bullet)
+
+                    enemies.remove(enemy)
+                    score += 10
+                    break
+
+        # Enemy bullets hit player
+        for bullet in enemy_bullets[:]:
+            if bullet.colliderect(player):
+                game_over = True
+
+        # Enemies reach player
+        for enemy in enemies:
+            if enemy.bottom >= player.top:
+                game_over = True
+
+        # Win condition
+        if not enemies:
+            won = True
+            game_over = True
+
+    # DRAWING
+    screen.fill(BLACK)
+
+    # Background stars
+    for i in range(70):
+        x = (i * 137) % WIDTH
+        y = (i * 89) % HEIGHT
+        screen.set_at((x, y), WHITE)
+
+    # Player
+    draw_player()
+
+    # Enemies
+    for enemy in enemies:
+        draw_enemy(enemy)
+
+    # Platforms
+    for block in platforms:
+        pygame.draw.rect(screen, GRAY, block)
+
+    # Player bullets
+    for bullet in player_bullets:
+        pygame.draw.rect(screen, BLUE, bullet)
+
+    # Enemy bullets
+    for bullet in enemy_bullets:
+        pygame.draw.rect(screen, RED, bullet)
+
+    # Score
+    score_text = font.render(
+        f"Score: {score}", True, WHITE
+    )
+    screen.blit(score_text, (15, 15))
+
+    # Enemy count
+    enemy_text = font.render(
+        f"Enemies: {len(enemies)}", True, GREEN
+    )
+    screen.blit(enemy_text, (620, 15))
+
+    # Game over screen
+    if game_over:
+
+        if won:
+            message = "YOU WIN!"
+            color = GREEN
+        else:
+            message = "GAME OVER"
+            color = RED
+
+        text = big_font.render(
+            message, True, color
+        )
+
+        screen.blit(
+            text,
+            text.get_rect(
+                center=(WIDTH // 2, HEIGHT // 2 - 30)
+            )
+        )
+
+        restart = font.render(
+            "Press R to Restart", True, WHITE
+        )
+
+        screen.blit(
+            restart,
+            restart.get_rect(
+                center=(WIDTH // 2, HEIGHT // 2 + 30)
+            )
+        )
+
+    pygame.display.flip()
+    clock.tick(60)
