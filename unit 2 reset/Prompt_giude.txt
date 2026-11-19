@@ -1,0 +1,15 @@
+1: The game is a run and gun, somewhat like subway surfers and is heavily inspired by Jetpack Joyride. The player is 
+trying to aviod obsticals and enemies to get the highest score they can get.
+
+2: The game has a short period for you to know that the round has started, from there the game is constantly moving foward.
+
+3: The game objects would be the player, the enemy, the obstical, the power-ups, and the elements that help you stay up in the air.
+
+4: The controls are very simple. The only one button is required to avoid obsticals and move foward. Holding it makes you go
+higher and you're trying not to hit anything that may be on the ceiling or ground of the enviornment.
+
+5: The ground enemy would walk around spawning on different sides of the screen to stop you from landing on the ground. When you get 
+touched by them the round is over, or when you have a power-up you lose said power-up. The spikes on the ceiling would stop you from staying
+too high from the ground. So you would have to stay somewhere in the middle.
+
+6: The lose condition is hitting any of the enemies or obsticals in your way, then you restart and do it again.
